@@ -4,16 +4,21 @@ import {
   Routes,
   Route
 } from 'react-router-dom'
+import {Container} from '@mui/material'
 import TaskForm from './components/TaskForm'
 import TaskList from './components/TaskList'
+import Navbar from './components/Navbar'
 
 const App = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<TaskList/>} />
-        <Route path='/tasks/new' element={<TaskForm/>} />
-      </Routes>
+      <Navbar/>
+      <Container>
+        <Routes>
+          <Route path='/' element={<TaskList/>} />
+          <Route path='/tasks/new' element={<TaskForm/>} />
+        </Routes>
+      </Container>
     </BrowserRouter>
   )
 }
