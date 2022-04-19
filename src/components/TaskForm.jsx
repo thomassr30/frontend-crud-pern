@@ -4,9 +4,13 @@ import {
   Typography,
   CardContent,
   TextField,
-  Button
+  Button,
+  CircularProgress
 } from '@mui/material'
+import axios from 'axios'
 import {useState, useEffect} from 'react'
+import { useNavigate } from 'react-router-dom'
+
 
 const TaskForm = () => {
 
@@ -15,10 +19,16 @@ const TaskForm = () => {
     description: ''
   })
 
-  const handleSubmit = (e) =>{
-    e.preventDefault()
+  const [loading, setloading] = useState(false)
 
-    console.log(task)
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e) =>{
+    e.preventDefault()
+    setloading(true)
+    await axios.post('http://localhost:4000/tasks', task)
+    setloading(false)
+    navigate('/')
   }
 
   const handleChange = (e) => {
@@ -55,8 +65,15 @@ const TaskForm = () => {
                 name='description'
                 onChange={handleChange}
               />  
-              <Button variant='contained' color='primary' type='submit'>
-                Guardar
+              <Button variant='contained' 
+                      color='primary' 
+                      type='submit'
+                      disabled={!task.title || !task.description}
+                      >
+                {loading ? <CircularProgress 
+                  color='inherit'
+                  size={24}
+                /> : 'Guardar'}
               </Button>
             </form>
           </CardContent>
