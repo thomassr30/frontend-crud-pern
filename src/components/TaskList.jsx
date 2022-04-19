@@ -12,9 +12,13 @@ const TaskList = () => {
     settasks(result.data)
   }
 
+  const handleDelete = async (id) => {
+    await axios.delete(`http://localhost:4000/tasks/${id}`)
+  }
+
   useEffect(() => {
     loadTasks()
-  }, [])
+  }, [tasks])
   
 
   return (
@@ -44,7 +48,7 @@ const TaskList = () => {
                   </Button>
                   <Button variant='contained' color='warning'
                   style={{marginLeft: '.5rem'}}
-                  onClick={() => console.log('Eliminando')}>
+                  onClick={() => handleDelete(task.id)}>
                     Eliminar
                   </Button>
                 </div>
