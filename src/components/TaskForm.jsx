@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import axios from 'axios'
 import {useState, useEffect} from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 
 const TaskForm = () => {
@@ -20,13 +20,21 @@ const TaskForm = () => {
   })
 
   const [loading, setloading] = useState(false)
+  const [editing, setediting] = useState(false)
 
   const navigate = useNavigate()
+  const params = useParams()
 
   const handleSubmit = async (e) =>{
     e.preventDefault()
     setloading(true)
-    await axios.post('http://localhost:4000/tasks', task)
+
+    if(editing){
+      await axios.put(`http://localhost:4000/tasks/${params.id}`, task)
+    }else{
+      await axios.post('http://localhost:4000/tasks', task)
+    }
+
     setloading(false)
     navigate('/')
   }
@@ -35,12 +43,33 @@ const TaskForm = () => {
     settask({...task, [e.target.name]: e.target.value})
   }
 
+  const loadTask = async (id) => {
+    const result = await axios.get(`http://localhost:4000/tasks/${id}`)
+    const {data} = result
+    
+    settask(
+      {
+        title: data[0].title,
+        description: data[0].description
+      }
+    )
+    setediting(true)
+  }
+
+  useEffect(() => {
+    if(params.id){
+      loadTask(params.id)
+    }
+  }, [params.id])
+
   return (
     <Grid container direction='column' justifyContent='center' alignItems='center'>
       <Grid item xs={6}>
         <Card sx={{mt:5}} style={{backgroundColor: '#1e272e', padding: '1rem'}}>
           <Typography variant='5' textAlign='center' color='white'>
-            Crear Tarea
+            {
+              editing ? 'Editar Tarea' : 'Nueva Tarea'
+            }
           </Typography>
           <CardContent>
             <form onSubmit={handleSubmit}>
@@ -51,6 +80,7 @@ const TaskForm = () => {
                 inputProps={{style: {color: 'white'}}}
                 InputLabelProps={{style: {color: 'white'}}}
                 name='title'
+                value={task.title}
                 onChange={handleChange}
               />
 
@@ -63,6 +93,7 @@ const TaskForm = () => {
                 inputProps={{style: {color: 'white'}}}
                 InputLabelProps={{style: {color: 'white'}}}
                 name='description'
+                value={task.description}
                 onChange={handleChange}
               />  
               <Button variant='contained' 
