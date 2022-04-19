@@ -1,10 +1,12 @@
 import {useEffect, useState} from 'react'
 import axios from 'axios'
 import { Button, Card, CardContent, Typography } from '@mui/material'
+import {useNavigate} from 'react-router-dom'
 
 const TaskList = () => {
 
   const [tasks, settasks] = useState([])
+  const navigate =  useNavigate()
 
   const loadTasks = async () => {
     const result = await axios.get('http://localhost:4000/tasks')
@@ -14,11 +16,12 @@ const TaskList = () => {
 
   const handleDelete = async (id) => {
     await axios.delete(`http://localhost:4000/tasks/${id}`)
+    settasks(tasks.filter((task) => task.id !== id));
   }
 
   useEffect(() => {
     loadTasks()
-  }, [tasks])
+  }, [])
   
 
   return (
@@ -43,7 +46,7 @@ const TaskList = () => {
                 <div>
                   <Button variant='contained' color='inherit' style={{
                     color: 'black'
-                  }} onClick={() => console.log('Editando')}>
+                  }} onClick={() => navigate(`/tasks/${task.id}/edit`)}>
                     Editar
                   </Button>
                   <Button variant='contained' color='warning'
